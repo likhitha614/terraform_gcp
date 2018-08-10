@@ -1,7 +1,9 @@
-resource "google_compute_instance" "blog" {
-  name         = "default"
+resource "google_compute_instance" "default" {
+  name         = "test"
   machine_type = "n1-standard-1"
   zone         = "us-central1-a"
+
+  tags = ["foo", "bar"]
 
   boot_disk {
     initialize_params {
@@ -9,22 +11,25 @@ resource "google_compute_instance" "blog" {
     }
   }
 
-  disk {
-    type    = "local-ssd"
-    scratch = true
+  // Local SSD disk
+  scratch_disk {
   }
 
   network_interface {
     network = "default"
-  }
-}  }
 
-  disk {
-    type    = "local-ssd"
-    scratch = true
+    access_config {
+      // Ephemeral IP
+    }
   }
 
-  network_interface {
-    network = "default"
+  metadata {
+    foo = "bar"
+  }
+
+  metadata_startup_script = "echo hi > /test.txt"
+
+  service_account {
+    scopes = ["userinfo-email", "compute-ro", "storage-ro"]
   }
 }
